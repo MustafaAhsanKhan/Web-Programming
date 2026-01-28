@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Mustafa Arts</title>
+</head>
+<body style="text-align: center;">
+    <!-- Navigation Bar -->
+    <nav style="background-color: #333; padding: 10px;">
+        <a href="index.html" style="color: white; text-decoration: none; margin: 0 15px;">Home</a>
+        <a href="about.html" style="color: white; text-decoration: none; margin: 0 15px;">About Us</a>
+        <a href="feedback.html" style="color: white; text-decoration: none; margin: 0 15px;">Feedback</a>
+    </nav>
+
+    <h1>Feedback Form</h1>
+    <div style="max-width: 500px; margin: 50px auto;">
+        <form style="text-align: left;">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" style="width: 100%; padding: 8px; margin: 5px 0 15px 0;" required><br>
+            
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" style="width: 100%; padding: 8px; margin: 5px 0 15px 0;" required><br>
+            
+            <label for="message">Your Feedback:</label><br>
+            <textarea id="message" name="message" rows="5" style="width: 100%; padding: 8px; margin: 5px 0 15px 0;" required></textarea><br>
+            
+            <label for="rating">Rating:</label><br>
+            <select id="rating" name="rating" style="width: 100%; padding: 8px; margin: 5px 0 15px 0;">
+                <option value="5">Excellent</option>
+                <option value="4">Good</option>
+                <option value="3">Average</option>
+                <option value="2">Poor</option>
+                <option value="1">Very Poor</option>
+            </select><br>
+            
+            <input type="submit" value="Submit" style="background-color: #333; color: white; padding: 10px 20px; border: none; cursor: pointer;">
+        </form>
+    </div>
+</body>
+</html>
