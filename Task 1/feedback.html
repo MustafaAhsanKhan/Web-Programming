@@ -4,29 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback - Mustafa Arts</title>
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style_manual.css">
 </head>
-<body style="text-align: center;">
+<body>
     <!-- Navigation Bar -->
-    <nav style="background-color: #333; padding: 10px;">
-        <a href="index.html" style="color: white; text-decoration: none; margin: 0 15px;">Home</a>
-        <a href="about.html" style="color: white; text-decoration: none; margin: 0 15px;">About Us</a>
-        <a href="feedback.html" style="color: white; text-decoration: none; margin: 0 15px;">Feedback</a>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="feedback.html">Feedback</a>
     </nav>
 
     <h1>Feedback Form</h1>
-    <div style="max-width: 500px; margin: 50px auto;">
-        <form style="text-align: left;">
+    <div class="form-container">
+        <form>
             <label for="name">Name:</label><br>
-            <input type="text" id="name" name="name" style="width: 100%; padding: 8px; margin: 5px 0 15px 0;" required><br>
+            <input type="text" id="name" name="name" required><br>
             
             <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" style="width: 100%; padding: 8px; margin: 5px 0 15px 0;" required><br>
+            <input type="email" id="email" name="email" required><br>
             
             <label for="message">Your Feedback:</label><br>
-            <textarea id="message" name="message" rows="5" style="width: 100%; padding: 8px; margin: 5px 0 15px 0;" required></textarea><br>
+            <textarea id="message" name="message" rows="5" required></textarea><br>
             
             <label for="rating">Rating:</label><br>
-            <select id="rating" name="rating" style="width: 100%; padding: 8px; margin: 5px 0 15px 0;">
+            <select id="rating" name="rating">
                 <option value="5">Excellent</option>
                 <option value="4">Good</option>
                 <option value="3">Average</option>
@@ -34,7 +37,7 @@
                 <option value="1">Very Poor</option>
             </select><br>
             
-            <input type="submit" value="Submit" style="background-color: #333; color: white; padding: 10px 20px; border: none; cursor: pointer;">
+            <input type="submit" value="Submit">
         </form>
     </div>
 </body>
