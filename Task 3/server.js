@@ -54,6 +54,16 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
     res.send(`Welcome ${req.session.user}`);
 });
 
+// GET /logout — destroy session and log user out
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).send('Logout failed');
+        }
+        res.send('Logout successful');
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
