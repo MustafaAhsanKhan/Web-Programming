@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+        h2 { margin-bottom: 0.75rem; color: #333; }
+        p { color: #666; margin-bottom: 1.5rem; }
+        button {
+            padding: 0.75rem 2rem;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        button:hover { background: #d32f2f; }
+        #message { margin-top: 1rem; color: green; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 id="welcomeMsg">Loading...</h2>
+        <p>You are successfully logged in.</p>
+        <button onclick="logout()">Logout</button>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // Verify session is valid; if not, redirect to login
+        fetch('/dashboard')
+            .then(res => {
+                if (!res.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                return res.text();
+            })
+            .then(text => {
+                if (text) document.getElementById('welcomeMsg').textContent = text;
+            });
+
+        async function logout() {
+            const res = await fetch('/logout');
+            const text = await res.text();
+            document.getElementById('message').textContent = text;
+            setTimeout(() => window.location.href = '/login.html', 1500);
+        }
+    </script>
+</body>
+</html>

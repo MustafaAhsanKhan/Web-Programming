@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const path = require('path');
 const connectDB = require('./db');
 const { User } = require('./User');
 const isAuthenticated = require('./middleware/auth');
@@ -20,6 +21,14 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
 }));
+
+// Serve static HTML files from /public
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Redirect root to register page
+app.get('/', (req, res) => {
+    res.redirect('/register.html');
+});
 
 // POST /register — create a new user account
 app.post('/register', async (req, res) => {
