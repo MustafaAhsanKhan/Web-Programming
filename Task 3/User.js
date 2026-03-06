@@ -28,8 +28,14 @@ class User {
         return newUser;
     }
 
-    // Placeholder — will be implemented in the next step
-    async login() {}
+    // Find user in MongoDB and verify password
+    async login() {
+        const user = await UserModel.findOne({
+            username: this.username,
+            password: this.password,
+        });
+        return user; // returns the document if found, null otherwise
+    }
 }
 
 module.exports = { User, UserModel };
