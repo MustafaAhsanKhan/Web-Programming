@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const connectDB = require('./db');
 const { User } = require('./User');
+const isAuthenticated = require('./middleware/auth');
 
 const app = express();
 const PORT = 3000;
@@ -46,6 +47,11 @@ app.post('/login', async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
+});
+
+// GET /dashboard — protected route, only accessible when logged in
+app.get('/dashboard', isAuthenticated, (req, res) => {
+    res.send(`Welcome ${req.session.user}`);
 });
 
 app.listen(PORT, () => {
