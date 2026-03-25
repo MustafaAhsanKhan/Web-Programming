@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Editor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- ========== Main Two-Column Layout ========== -->
+        <div class="main-area">
+
+            <!-- Left: Controls Panel -->
+            <div class="controls-panel">
+
+                <!-- Filter Selection Card (bordered) -->
+                <div class="filter-card">
+                    <h3 class="section-title">Filters</h3>
+
+                    <!-- 2x2 Filter Tab Buttons -->
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="brightness">Brightness</button>
+                        <button class="filter-btn" data-filter="saturation">Saturation</button>
+                        <button class="filter-btn" data-filter="inversion">Inversion</button>
+                        <button class="filter-btn" data-filter="grayscale">Grayscale</button>
+                    </div>
+
+                    <!-- Active Filter Slider Label -->
+                    <div class="slider-info">
+                        <span class="filter-name">Brightness</span>
+                        <span class="filter-value">0%</span>
+                    </div>
+
+                    <!-- Active Filter Slider (step=3 for odd roll#) -->
+                    <input type="range" class="filter-slider" id="filterSlider"
+                           min="0" max="100" value="0" step="3">
+
+                    <!-- Rotate & Flip Section -->
+                    <h3 class="section-title rotate-title">Rotate & Flip</h3>
+                    <div class="rotate-flip-buttons">
+                        <button class="rf-btn" id="rotateLeftBtn" title="Rotate Left 90°">&#8634;</button>
+                        <button class="rf-btn" id="rotateRightBtn" title="Rotate Right 90°">&#8635;</button>
+                        <button class="rf-btn" id="flipHBtn" title="Flip Horizontal">&#8860;</button>
+                        <button class="rf-btn" id="flipVBtn" title="Flip Vertical">&#8861;</button>
+                    </div>
+                </div>
+
+                <!-- Additional Sliders Section (with pink badges) -->
+                <div class="extra-sliders">
+                    <!-- Blur Slider -->
+                    <div class="slider-row">
+                        <label class="slider-label">Blur</label>
+                        <input type="range" class="extra-slider" id="blurSlider"
+                               min="0" max="30" value="0" step="3">
+                        <span class="slider-badge" id="blurBadge">0 px</span>
+                    </div>
+                    <!-- Rotate Slider -->
+                    <div class="slider-row">
+                        <label class="slider-label">Rotate</label>
+                        <input type="range" class="extra-slider" id="rotateSlider"
+                               min="0" max="360" value="0" step="3">
+                        <span class="slider-badge" id="rotateBadge">0 deg</span>
+                    </div>
+                    <!-- Sepia Slider -->
+                    <div class="slider-row">
+                        <label class="slider-label">Sepia</label>
+                        <input type="range" class="extra-slider" id="sepiaSlider"
+                               min="0" max="100" value="0" step="3">
+                        <span class="slider-badge" id="sepiaBadge">0%</span>
+                    </div>
+                </div>
+
+                <!-- History Panel -->
+                <div class="history-panel">
+                    <h3 class="section-title">History</h3>
+                    <ul class="history-list" id="historyList">
+                        <!-- Populated dynamically by JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right: Canvas / Image Panel -->
+            <div class="canvas-panel">
+                <!-- File Input (native browser input shown at top) -->
+                <input type="file" id="fileInput" accept="image/*">
+                <!-- Canvas Wrapper -->
+                <div class="canvas-wrapper">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== Bottom Action Bar ========== -->
+        <div class="bottom-bar">
+            <button class="reset-btn" id="resetBtn">RESET FILTERS</button>
+            <div class="history-buttons">
+                <button class="undo-btn" id="undoBtn" disabled title="Undo">&#8617; UNDO</button>
+                <button class="redo-btn" id="redoBtn" disabled title="Redo">REDO &#8618;</button>
+            </div>
+            <div class="action-buttons">
+                <button class="choose-btn" id="chooseBtn">CHOOSE IMAGE</button>
+                <button class="save-btn" id="saveBtn">SAVE IMAGE</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
