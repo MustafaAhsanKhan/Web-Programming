@@ -1,0 +1,125 @@
+.wrapper {
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px 16px 8px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.5);
+}
+
+.hint {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  color: #f0e040;
+  animation: blink 1s ease infinite alternate;
+}
+
+.segmentLabels {
+  display: flex;
+  width: 100%;
+  margin-bottom: 2px;
+}
+
+.segLabel {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-align: center;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  height: 38px;
+  border-radius: 6px;
+  overflow: visible;
+  cursor: default;
+  border: 2px solid rgba(255,255,255,0.15);
+  user-select: none;
+}
+
+.bar.clickable {
+  cursor: pointer;
+  border-color: rgba(255,255,255,0.4);
+  box-shadow: 0 0 14px rgba(240,224,64,0.25);
+}
+
+.bar.clickable:hover {
+  box-shadow: 0 0 22px rgba(240,224,64,0.45);
+}
+
+.segment {
+  height: 100%;
+  transition: filter 0.2s;
+}
+
+.bar.clickable .segment:hover {
+  filter: brightness(1.2);
+}
+
+/* Slider */
+.slider {
+  position: absolute;
+  top: -10px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.sliderArrow {
+  font-size: 14px;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 0 0 6px rgba(255,255,255,0.9);
+}
+
+.sliderLine {
+  width: 3px;
+  height: 54px;
+  background: #ffffff;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255,255,255,0.8);
+  margin-top: 1px;
+}
+
+/* Scale */
+.scale {
+  position: relative;
+  height: 18px;
+  margin-top: 4px;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.35);
+}
+
+.tick {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+@keyframes blink {
+  from { opacity: 1; }
+  to { opacity: 0.4; }
+}

@@ -1,0 +1,87 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.prompt {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.45);
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px 8px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-display);
+  color: #fff;
+  background: rgba(255,255,255,0.07);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.aggressive {
+  border-color: rgba(192, 57, 43, 0.5);
+}
+.aggressive:not(:disabled):hover {
+  background: rgba(192,57,43,0.25);
+  border-color: #c0392b;
+}
+.aggressive.active {
+  background: rgba(192,57,43,0.35);
+  border-color: var(--btn-aggressive-hover);
+  box-shadow: 0 0 18px rgba(231,76,60,0.4);
+}
+
+.defensive {
+  border-color: rgba(36, 113, 163, 0.5);
+}
+.defensive:not(:disabled):hover {
+  background: rgba(36,113,163,0.25);
+  border-color: #2471a3;
+}
+.defensive.active {
+  background: rgba(36,113,163,0.35);
+  border-color: var(--btn-defensive-hover);
+  box-shadow: 0 0 18px rgba(46,134,193,0.4);
+}
+
+.icon {
+  font-size: 1.4rem;
+}
+
+.name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.desc {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.5px;
+}
