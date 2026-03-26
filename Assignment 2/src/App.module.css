@@ -1,0 +1,172 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a0a;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #0d0d0d;
+  border-bottom: 1px solid rgba(240,224,64,0.2);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoIcon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.logoText {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #f0e040;
+}
+
+.restartHeaderBtn {
+  background: transparent;
+  border: 1px solid rgba(240,224,64,0.35);
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: rgba(240,224,64,0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.restartHeaderBtn:hover {
+  border-color: #f0e040;
+  color: #f0e040;
+  background: rgba(240,224,64,0.08);
+}
+
+/* ── Main ────────────────────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px 16px 32px;
+}
+
+.gameWrapper {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Field ───────────────────────────────────────────────────────────────── */
+.fieldContainer {
+  position: relative;
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  background: #1a5c1a;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.6);
+}
+
+/* ── Control panel ───────────────────────────────────────────────────────── */
+.controlPanel {
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Status message ──────────────────────────────────────────────────────── */
+.statusMsg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.6);
+  padding: 8px;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #e74c3c;
+  border-radius: 50%;
+  animation: ping 0.8s ease infinite alternate;
+}
+
+/* ── Probability legend ──────────────────────────────────────────────────── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legendSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legendLabel {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.55);
+}
+
+.legendProb {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.35);
+}
+
+@keyframes ping {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0.3; transform: scale(1.4); }
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 500px) {
+  .header {
+    padding: 10px 14px;
+  }
+  .logoText {
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+  .main {
+    padding: 12px 8px 24px;
+  }
+  .controlPanel {
+    padding: 12px;
+    gap: 10px;
+  }
+}

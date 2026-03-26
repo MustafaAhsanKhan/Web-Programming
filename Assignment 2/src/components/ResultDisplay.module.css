@@ -1,0 +1,72 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(3px);
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  border-radius: 8px;
+}
+
+.overlay.in {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.card {
+  background: rgba(10, 10, 10, 0.92);
+  border: 2px solid;
+  border-radius: 12px;
+  padding: 24px 36px;
+  text-align: center;
+  animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.emoji {
+  font-size: 2.5rem;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.result {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.runs {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: rgba(255,255,255,0.55);
+  margin-top: 4px;
+}
+
+.btn {
+  margin-top: 18px;
+  background: transparent;
+  border: 2px solid;
+  border-radius: 6px;
+  padding: 8px 24px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+}
+
+@keyframes pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
