@@ -1,0 +1,46 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --green-dark: #1a5c1a;
+  --green-mid: #2d8c2d;
+  --green-light: #3db53d;
+  --pitch-tan: #c8a96e;
+  --pitch-dark: #b8954e;
+  --sky-top: #1a6eb5;
+  --sky-bottom: #5aaee8;
+  --crowd-bg: #8B4513;
+  --scoreboard-bg: #0d0d0d;
+  --scoreboard-text: #f0e040;
+  --panel-bg: rgba(0, 0, 0, 0.82);
+  --btn-aggressive: #c0392b;
+  --btn-aggressive-hover: #e74c3c;
+  --btn-defensive: #2471a3;
+  --btn-defensive-hover: #2e86c1;
+  --btn-active-border: #f0e040;
+  --bar-wicket: #e74c3c;
+  --bar-0: #e67e22;
+  --bar-1: #f1c40f;
+  --bar-2: #2ecc71;
+  --bar-3: #1abc9c;
+  --bar-4: #3498db;
+  --bar-6: #9b59b6;
+  --slider-color: #ffffff;
+  --font-display: 'Oswald', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: #0a0a0a;
+  font-family: var(--font-body);
+  color: #fff;
+  overflow-x: hidden;
+}
