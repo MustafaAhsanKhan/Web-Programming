@@ -5,9 +5,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { LogoutButton } from "@/components/LogoutButton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useLeadSocket } from "@/hooks/useLeadSocket";
 
 function AdminDashboard() {
   const { user } = useAuth();
+  useLeadSocket();
 
   return (
     <div className="min-h-screen bg-background text-foreground">

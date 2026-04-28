@@ -18,6 +18,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { useLeadSocket } from "@/hooks/useLeadSocket";
 
 interface Lead {
   _id: string;
@@ -36,7 +38,6 @@ function AgentLeadsPage() {
   const { user } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-
   // Filters
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
@@ -59,6 +60,8 @@ function AgentLeadsPage() {
       setLoading(false);
     }
   };
+
+  useLeadSocket(fetchLeads);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {

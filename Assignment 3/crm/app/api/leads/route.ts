@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Lead from "@/models/Lead";
 import Activity from "@/models/Activity";
+import User from "@/models/User"; // required so Mongoose knows the schema for populate()
 import { verifyToken } from "@/lib/jwt";
 import { createLeadSchema } from "@/lib/validations/lead";
+import { broadcastSseEvent } from "@/lib/sse";
 
 // Helper to get authenticated user from request
 async function getAuthUser(request: NextRequest) {
@@ -58,6 +60,9 @@ export async function POST(request: NextRequest) {
       performedBy: user.userId,
       details: result.data.assignedTo ? `Created and assigned.` : "Created lead.",
     });
+
+    // Notify all connected browsers in real-time
+    broadcastSseEvent("new_lead", { lead: newLead });
 
     return NextResponse.json({
       success: true,

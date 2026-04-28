@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Lead from "@/models/Lead";
 import Activity from "@/models/Activity";
-import User from "@/models/User"; // required for population
+import User from "@/models/User";
 import { verifyToken } from "@/lib/jwt";
 import { updateLeadAdminSchema, updateLeadAgentSchema } from "@/lib/validations/lead";
+import { broadcastSseEvent } from "@/lib/sse";
 
 async function getAuthUser(request: NextRequest) {
   const token = request.cookies.get("crm_token")?.value;
@@ -130,6 +131,9 @@ export async function PUT(
     if (activitiesToLog.length > 0) {
       await Activity.insertMany(activitiesToLog);
     }
+
+    // Notify all connected browsers in real-time
+    broadcastSseEvent("lead_updated", { leadId: id, updates });
 
     return NextResponse.json({
       success: true,

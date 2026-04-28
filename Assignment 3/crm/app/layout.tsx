@@ -22,6 +22,8 @@ export const metadata: Metadata = {
     "A powerful CRM for Pakistani property dealers to manage leads, track agents, and close deals faster.",
 };
 
+import { Toaster } from "@/components/ui/sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,6 +37,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

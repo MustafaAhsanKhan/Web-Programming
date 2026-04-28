@@ -14,6 +14,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AddLeadDialog } from "@/components/AddLeadDialog";
 import { ArrowLeft, Trash2, Eye, Search } from "lucide-react";
 import { formatBudget } from "@/lib/utils";
+import { toast } from "sonner";
+import { useLeadSocket } from "@/hooks/useLeadSocket";
 
 interface Agent {
   _id: string;
@@ -79,6 +81,8 @@ function AdminLeadsPage() {
     fetchAgents();
   }, []);
 
+  useLeadSocket(fetchLeads);
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchLeads();
@@ -101,7 +105,7 @@ function AdminLeadsPage() {
 
   const handleAssign = async (leadId: string, agentId: string) => {
     try {
-      const res = await fetch(`/api/leads/${leadId}`, {
+      const res = await fetch(`/api/leads/${leadId}/assign`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ assignedTo: agentId === "unassigned" ? null : agentId }),
@@ -109,9 +113,12 @@ function AdminLeadsPage() {
       const data = await res.json();
       if (data.success) {
         fetchLeads();
+      } else {
+        toast.error("Failed to assign lead");
       }
     } catch (err) {
       console.error(err);
+      toast.error("An error occurred during assignment");
     }
   };
 

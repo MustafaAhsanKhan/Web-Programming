@@ -15,7 +15,8 @@ import { CalendarIcon, MessageCircle, ArrowLeft, Edit2, CheckCircle2, XCircle } 
 import { Label } from "@/components/ui/label";
 
 function LeadDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id as string;
   const router = useRouter();
   
   const [lead, setLead] = useState<ILeadClient | null>(null);
