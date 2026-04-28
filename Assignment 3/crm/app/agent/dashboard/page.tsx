@@ -3,6 +3,8 @@
 import { withAuth } from "@/components/withAuth";
 import { useAuth } from "@/hooks/useAuth";
 import { LogoutButton } from "@/components/LogoutButton";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 function AgentDashboard() {
   const { user } = useAuth();
@@ -90,7 +92,7 @@ function AgentDashboard() {
           ))}
         </div>
 
-        {/* Coming Soon Banner */}
+        {/* Quick Links */}
         <div className="rounded-xl border border-primary/20 bg-primary/5 p-6 flex items-start gap-4">
           <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
             <svg
@@ -105,19 +107,21 @@ function AgentDashboard() {
               strokeLinejoin="round"
               className="text-primary"
             >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
             </svg>
           </div>
-          <div>
+          <div className="flex-1">
             <h3 className="font-semibold text-foreground">
-              Your lead list is coming in Phase 3
+              Your Lead List is Ready!
             </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Authentication is live. Your assigned leads, follow-ups, and
-              WhatsApp integration will appear here next.
+            <p className="text-sm text-muted-foreground mt-1 mb-4">
+              View your assigned leads, update their statuses, and set follow-ups.
             </p>
+            <Link href="/agent/leads">
+              <Button>View My Leads</Button>
+            </Link>
           </div>
         </div>
       </main>

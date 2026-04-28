@@ -83,7 +83,7 @@ export async function PUT(
       return NextResponse.json({ 
         success: false, 
         error: "Validation failed", 
-        details: result.error.errors 
+        details: result.error.issues 
       }, { status: 400 });
     }
 
@@ -100,7 +100,7 @@ export async function PUT(
       });
     }
 
-    if (user.role === "admin" && updates.assignedTo !== undefined) {
+    if (user.role === "admin" && "assignedTo" in updates && updates.assignedTo !== undefined) {
       // Check if assignedTo actually changed
       const oldAssignedTo = lead.assignedTo?.toString() || null;
       const newAssignedTo = updates.assignedTo || null;

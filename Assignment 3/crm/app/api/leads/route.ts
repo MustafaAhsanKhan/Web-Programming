@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ 
         success: false, 
         error: "Validation failed", 
-        details: result.error.errors 
+        details: result.error.issues 
       }, { status: 400 });
     }
 
@@ -44,11 +44,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "A lead with this email already exists" }, { status: 409 });
     }
 
+    const createData: any = { ...result.data };
+    if (!createData.assignedTo) delete createData.assignedTo;
+    if (!createData.followUpDate) delete createData.followUpDate;
+
     // Create the lead
-    const newLead = await Lead.create({
-      ...result.data,
-      assignedTo: result.data.assignedTo || null,
-    });
+    const newLead = await Lead.create(createData);
 
     // Log the creation activity
     await Activity.create({

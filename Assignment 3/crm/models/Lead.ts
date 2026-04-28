@@ -100,7 +100,7 @@ const LeadSchema = new Schema<ILead>(
 //   Budget > 20M   → score 3 (High Priority)
 //   Budget 10M–20M → score 2 (Medium Priority)
 //   Budget < 10M   → score 1 (Low Priority)
-LeadSchema.pre("save", function (next) {
+LeadSchema.pre("save", function () {
   if (this.isModified("budget")) {
     if (this.budget > 20_000_000) {
       this.score = 3;
@@ -113,8 +113,6 @@ LeadSchema.pre("save", function (next) {
 
   // Refresh lastActivity on every save
   this.lastActivity = new Date();
-
-  next();
 });
 
 // ─── Indexes ────────────────────────────────────────────
