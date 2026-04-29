@@ -36,7 +36,7 @@ export const leadUpdateSchema = z.object({
 });
 
 export const leadAssignSchema = z.object({
-  agentId: z.string().min(1, "Agent ID is required"),
+  agentId: z.string().nullable().optional(),
 });
 
 export const leadFollowupSchema = z.object({

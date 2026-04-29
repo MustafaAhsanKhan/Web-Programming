@@ -108,13 +108,14 @@ function AdminLeadsPage() {
       const res = await fetch(`/api/leads/${leadId}/assign`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ assignedTo: agentId === "unassigned" ? null : agentId }),
+        body: JSON.stringify({ agentId: agentId === "unassigned" ? null : agentId }),
       });
       const data = await res.json();
       if (data.success) {
         fetchLeads();
+        toast.success(agentId === "unassigned" ? "Lead unassigned" : "Lead assigned successfully");
       } else {
-        toast.error("Failed to assign lead");
+        toast.error("Failed to update lead assignment");
       }
     } catch (err) {
       console.error(err);

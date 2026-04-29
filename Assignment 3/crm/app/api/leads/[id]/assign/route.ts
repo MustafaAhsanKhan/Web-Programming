@@ -20,6 +20,19 @@ export const PUT = withMiddleware(
     const lead = await Lead.findById(id);
     if (!lead) return NextResponse.json({ success: false, error: "Lead not found" }, { status: 404 });
 
+    // Unassign if no agentId provided
+    if (!agentId) {
+      lead.assignedTo = null as any;
+      await lead.save();
+      await Activity.create({
+        lead: id,
+        action: "Lead unassigned",
+        performedBy: request.user.userId,
+      });
+      broadcastSseEvent("lead_updated", { leadId: id, updates: { assignedTo: null } });
+      return NextResponse.json({ success: true, lead });
+    }
+
     const agent = await User.findOne({ _id: agentId, role: "agent" });
     if (!agent) return NextResponse.json({ success: false, error: "Agent not found" }, { status: 404 });
 
