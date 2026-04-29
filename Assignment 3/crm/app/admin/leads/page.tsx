@@ -163,7 +163,15 @@ function AdminLeadsPage() {
       <main className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-2xl font-bold tracking-tight">Leads Database</h1>
-          <AddLeadDialog onLeadAdded={fetchLeads} />
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => window.open('/api/leads/export?format=excel', '_blank')}>
+              Export Excel
+            </Button>
+            <Button variant="outline" onClick={() => window.open('/api/leads/export?format=pdf', '_blank')}>
+              Export PDF
+            </Button>
+            <AddLeadDialog onLeadAdded={fetchLeads} />
+          </div>
         </div>
 
         {/* Filters */}
