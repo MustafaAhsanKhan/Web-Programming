@@ -11,11 +11,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Eye, Search, CalendarIcon, MessageSquare } from "lucide-react";
+import { ArrowLeft, Eye, Search, CalendarIcon, MessageSquare, Bell } from "lucide-react";
 import { formatBudget } from "@/lib/utils";
+import { isToday, isPast, format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -90,6 +90,15 @@ function AgentLeadsPage() {
     if (score === 3) return <Badge className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">High</Badge>;
     if (score === 2) return <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white">Medium</Badge>;
     return <Badge className="bg-green-500 hover:bg-green-600 text-white">Low</Badge>;
+  };
+
+  // Returns urgency class + bell indicator for a follow-up date
+  const getFollowupMeta = (dateStr?: string) => {
+    if (!dateStr) return { rowClass: "", isUrgent: false };
+    const d = new Date(dateStr);
+    if (isPast(d) && !isToday(d)) return { rowClass: "bg-destructive/5 hover:bg-destructive/10 border-l-2 border-l-destructive", isUrgent: true, label: "Overdue" };
+    if (isToday(d)) return { rowClass: "bg-yellow-500/5 hover:bg-yellow-500/10 border-l-2 border-l-yellow-500", isUrgent: true, label: "Today" };
+    return { rowClass: "", isUrgent: false };
   };
 
   return (
@@ -179,8 +188,10 @@ function AgentLeadsPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  leads.map((lead) => (
-                    <TableRow key={lead._id}>
+                  leads.map((lead) => {
+                    const { rowClass, isUrgent, label: urgencyLabel } = getFollowupMeta(lead.followUpDate);
+                    return (
+                    <TableRow key={lead._id} className={rowClass}>
                       <TableCell className="font-medium whitespace-nowrap">
                         <div>{lead.name}</div>
                         <div className="text-xs text-muted-foreground">{lead.phone}</div>
@@ -209,10 +220,19 @@ function AgentLeadsPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className={`w-[130px] justify-start text-left font-normal ${!lead.followUpDate && "text-muted-foreground"}`}
+                              className={`w-[140px] justify-start text-left font-normal ${
+                                !lead.followUpDate ? "text-muted-foreground" : ""
+                              } ${isUrgent ? "border-destructive/50" : ""}`}
                             >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {lead.followUpDate ? format(new Date(lead.followUpDate), "PPP") : "Set date"}
+                              {isUrgent && (
+                                <Bell size={13} className={`mr-1.5 flex-shrink-0 ${
+                                  urgencyLabel === "Overdue" ? "text-destructive" : "text-yellow-500"
+                                }`} />
+                              )}
+                              {!isUrgent && <CalendarIcon className="mr-2 h-4 w-4" />}
+                              {lead.followUpDate
+                                ? format(new Date(lead.followUpDate), "dd MMM yy")
+                                : "Set date"}
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
@@ -221,7 +241,12 @@ function AgentLeadsPage() {
                               selected={lead.followUpDate ? new Date(lead.followUpDate) : undefined}
                               onSelect={(date) => {
                                 if (date) {
-                                  handleUpdateLead(lead._id, { followUpDate: date.toISOString() });
+                                  // Use the dedicated followup endpoint
+                                  fetch(`/api/leads/${lead._id}/followup`, {
+                                    method: "PUT",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ followUpDate: date.toISOString() }),
+                                  }).then(() => fetchLeads());
                                 }
                               }}
                               initialFocus
@@ -274,7 +299,8 @@ function AgentLeadsPage() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))
+                    );
+                  })
                 )}
               </TableBody>
             </Table>
