@@ -65,23 +65,17 @@ export async function POST(request: NextRequest) {
     // Notify all connected browsers in real-time (non-blocking)
     broadcastSseEvent("new_lead", { lead: newLead });
 
-    // Email every admin account (using the email they signed up with) — fire-and-forget
-    User.find({ role: "admin" }, "email").lean().then((admins: any[]) => {
-      const adminEmails = admins.map((a) => a.email).filter(Boolean);
-      sendNewLeadEmail(
-        {
-          _id: newLead._id?.toString(),
-          name: newLead.name,
-          email: newLead.email,
-          phone: newLead.phone,
-          budget: newLead.budget,
-          propertyInterest: newLead.propertyInterest,
-          source: newLead.source,
-          score: newLead.score,
-        },
-        adminEmails
-      );
-    }).catch((err: any) => console.error("[POST /api/leads] Failed to fetch admin emails:", err));
+    // Email admin(s) — fire-and-forget, never blocks the response
+    sendNewLeadEmail({
+      _id: newLead._id?.toString(),
+      name: newLead.name,
+      email: newLead.email,
+      phone: newLead.phone,
+      budget: newLead.budget,
+      propertyInterest: newLead.propertyInterest,
+      source: newLead.source,
+      score: newLead.score,
+    });
 
     return NextResponse.json({
       success: true,

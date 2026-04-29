@@ -8,6 +8,7 @@ const resend = process.env.RESEND_API_KEY
   : null;
 
 const FROM = process.env.EMAIL_FROM ?? "PropertyCRM <notifications@propertycrm.pk>";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function formatPKR(amount: number) {
@@ -251,32 +252,23 @@ export interface LeadEmailData {
 }
 
 /**
- * Notify a list of admins when a new lead is created.
- * Pass every admin's account email from the database.
+ * Notify ALL admins when a new lead is created.
  * Fire-and-forget: never blocks the API response.
- *
- * @param adminEmails  Array of admin account emails fetched from the DB.
  */
-export function sendNewLeadEmail(lead: LeadEmailData, adminEmails: string[]): void {
-  if (!resend) {
-    console.log("[EMAIL] sendNewLeadEmail skipped — RESEND_API_KEY not set");
-    return;
-  }
-
-  const recipients = adminEmails.filter(Boolean);
-  if (recipients.length === 0) {
-    console.log("[EMAIL] sendNewLeadEmail skipped — no admin emails provided");
+export function sendNewLeadEmail(lead: LeadEmailData): void {
+  if (!resend || !ADMIN_EMAIL) {
+    console.log("[EMAIL] sendNewLeadEmail skipped — RESEND_API_KEY or ADMIN_EMAIL not set");
     return;
   }
 
   resend.emails
     .send({
       from: FROM,
-      to: recipients,
+      to: ADMIN_EMAIL.split(",").map((e) => e.trim()),
       subject: `🚀 New Lead: ${lead.name} — ${formatPKR(lead.budget)}`,
       html: newLeadHtml(lead),
     })
-    .then(() => console.log(`[EMAIL] New-lead alert sent to ${recipients.join(", ")}`))
+    .then(() => console.log(`[EMAIL] New-lead alert sent for ${lead.name}`))
     .catch((err) => console.error("[EMAIL] sendNewLeadEmail failed:", err));
 }
 
