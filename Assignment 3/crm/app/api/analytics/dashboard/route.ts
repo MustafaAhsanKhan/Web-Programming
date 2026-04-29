@@ -1,22 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Lead from "@/models/Lead";
 import User from "@/models/User";
-import { verifyToken } from "@/lib/jwt";
-import mongoose from "mongoose";
+import { withMiddleware } from "@/lib/api-middleware";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
-  try {
-    const token = request.cookies.get("crm_token")?.value;
-    if (!token) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-
-    const user = await verifyToken(token);
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ success: false, error: "Forbidden: Admins only" }, { status: 403 });
-    }
-
+export const GET = withMiddleware(
+  async () => {
     await dbConnect();
 
     const now = new Date();
@@ -26,7 +17,6 @@ export async function GET(request: NextRequest) {
     sevenDaysAgo.setDate(now.getDate() - 6);
     sevenDaysAgo.setHours(0, 0, 0, 0);
 
-    // 1. Basic Counts
     const totalLeads = await Lead.countDocuments();
     
     const overdueFollowupsCount = await Lead.countDocuments({
@@ -41,7 +31,6 @@ export async function GET(request: NextRequest) {
 
     const highPriority = await Lead.countDocuments({ score: 3 });
 
-    // 2. Leads by Status & Priority (Aggregation)
     const statusAgg = await Lead.aggregate([
       { $group: { _id: "$status", count: { $sum: 1 } } }
     ]);
@@ -62,7 +51,6 @@ export async function GET(request: NextRequest) {
       if (p._id === 1) leadsByPriority.Low = p.count;
     });
 
-    // 3. Agent Performance (Aggregation)
     const agentAgg = await Lead.aggregate([
       { $match: { assignedTo: { $exists: true, $ne: null } } },
       { 
@@ -75,7 +63,6 @@ export async function GET(request: NextRequest) {
       }
     ]);
     
-    // Fetch Agent names
     const agentPerformance = [];
     for (const agentData of agentAgg) {
       const agentUser = await User.findById(agentData._id).lean();
@@ -89,10 +76,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Sort by most closed leads
     agentPerformance.sort((a, b) => b.closedCount - a.closedCount);
 
-    // 4. Leads created over last 7 days (Line Chart Data)
     const leadsByDateAgg = await Lead.aggregate([
       { $match: { createdAt: { $gte: sevenDaysAgo } } },
       {
@@ -104,7 +89,6 @@ export async function GET(request: NextRequest) {
       { $sort: { _id: 1 } }
     ]);
 
-    // Fill in missing dates for the last 7 days
     const leadsByDate = [];
     for (let i = 0; i <= 6; i++) {
       const d = new Date(sevenDaysAgo);
@@ -118,7 +102,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // 5. Recent Leads
     const recentLeads = await Lead.find()
       .populate("assignedTo", "name")
       .sort({ createdAt: -1 })
@@ -139,9 +122,6 @@ export async function GET(request: NextRequest) {
         recentLeads
       }
     });
-
-  } catch (error: any) {
-    console.error("[GET /api/analytics/dashboard]", error);
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
-  }
-}
+  },
+  { requireAdmin: true }
+);

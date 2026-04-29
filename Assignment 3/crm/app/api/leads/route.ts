@@ -1,53 +1,27 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Lead from "@/models/Lead";
 import Activity from "@/models/Activity";
 import User from "@/models/User";
-import { verifyToken } from "@/lib/jwt";
 import { createLeadSchema } from "@/lib/validations/lead";
 import { broadcastSseEvent } from "@/lib/sse";
 import { sendNewLeadEmail } from "@/lib/email";
+import { withMiddleware } from "@/lib/api-middleware";
 
-// Helper to get authenticated user from request
-async function getAuthUser(request: NextRequest) {
-  const token = request.cookies.get("crm_token")?.value;
-  if (!token) return null;
-  return await verifyToken(token);
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const user = await getAuthUser(request);
-    
-    if (!user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-    }
-    
-    if (user.role !== "admin") {
-      return NextResponse.json({ success: false, error: "Forbidden: Admins only" }, { status: 403 });
-    }
-
-    const body = await request.json();
-    
-    // Validate with Zod
-    const result = createLeadSchema.safeParse(body);
-    if (!result.success) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Validation failed", 
-        details: result.error.issues 
-      }, { status: 400 });
-    }
+export const POST = withMiddleware(
+  async (request) => {
+    // The request body is already validated by withMiddleware using createLeadSchema
+    const body = await request.clone().json();
 
     await dbConnect();
-    
+
     // Check if lead with email exists
-    const existingLead = await Lead.findOne({ email: result.data.email });
+    const existingLead = await Lead.findOne({ email: body.email });
     if (existingLead) {
       return NextResponse.json({ success: false, error: "A lead with this email already exists" }, { status: 409 });
     }
 
-    const createData: any = { ...result.data };
+    const createData: any = { ...body };
     if (!createData.assignedTo) delete createData.assignedTo;
     if (!createData.followUpDate) delete createData.followUpDate;
 
@@ -58,8 +32,8 @@ export async function POST(request: NextRequest) {
     await Activity.create({
       lead: newLead._id,
       action: "Lead created",
-      performedBy: user.userId,
-      details: result.data.assignedTo ? `Created and assigned.` : "Created lead.",
+      performedBy: request.user.userId,
+      details: body.assignedTo ? `Created and assigned.` : "Created lead.",
     });
 
     // Notify all connected browsers in real-time (non-blocking)
@@ -88,21 +62,12 @@ export async function POST(request: NextRequest) {
       message: "Lead created successfully",
       lead: newLead
     }, { status: 201 });
-    
-  } catch (error: any) {
-    console.error("[POST /api/leads]", error);
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
-  }
-}
+  },
+  { requireAdmin: true, schema: createLeadSchema }
+);
 
-export async function GET(request: NextRequest) {
-  try {
-    const user = await getAuthUser(request);
-    
-    if (!user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-    }
-
+export const GET = withMiddleware(
+  async (request) => {
     await dbConnect();
 
     const { searchParams } = new URL(request.url);
@@ -115,9 +80,9 @@ export async function GET(request: NextRequest) {
     const query: any = {};
 
     // Role-based restrictions
-    if (user.role === "agent") {
+    if (request.user.role === "agent") {
       // Agents can only see leads assigned to them
-      query.assignedTo = user.userId;
+      query.assignedTo = request.user.userId;
     } else if (assignedTo) {
       // Admins can filter by assignedTo
       query.assignedTo = assignedTo === "unassigned" ? null : assignedTo;
@@ -144,9 +109,6 @@ export async function GET(request: NextRequest) {
       count: leads.length,
       leads
     });
-
-  } catch (error: any) {
-    console.error("[GET /api/leads]", error);
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
-  }
-}
+  },
+  { requireAuth: true }
+);

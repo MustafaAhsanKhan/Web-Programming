@@ -1,26 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Lead from "@/models/Lead";
 import Activity from "@/models/Activity";
 import User from "@/models/User";
-import { verifyToken } from "@/lib/jwt";
 import { updateLeadAdminSchema, updateLeadAgentSchema } from "@/lib/validations/lead";
 import { broadcastSseEvent } from "@/lib/sse";
+import { withMiddleware } from "@/lib/api-middleware";
 
-async function getAuthUser(request: NextRequest) {
-  const token = request.cookies.get("crm_token")?.value;
-  if (!token) return null;
-  return await verifyToken(token);
-}
-
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> } // In Next.js 15 app router, params should be awaited if we use dynamic routes
-) {
-  try {
-    const user = await getAuthUser(request);
-    if (!user) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-
+export const GET = withMiddleware(
+  async (request, { params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
     await dbConnect();
 
@@ -31,7 +19,7 @@ export async function GET(
     }
 
     // Agent can only view if assigned to them
-    if (user.role === "agent" && lead.assignedTo?._id.toString() !== user.userId) {
+    if (request.user.role === "agent" && lead.assignedTo?._id.toString() !== request.user.userId) {
       return NextResponse.json({ success: false, error: "Forbidden: Not assigned to this lead" }, { status: 403 });
     }
 
@@ -45,21 +33,12 @@ export async function GET(
       lead,
       activities
     });
+  },
+  { requireAuth: true }
+);
 
-  } catch (error: any) {
-    console.error("[GET /api/leads/[id]]", error);
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
-  }
-}
-
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const user = await getAuthUser(request);
-    if (!user) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-
+export const PUT = withMiddleware(
+  async (request, { params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
     await dbConnect();
 
@@ -70,14 +49,14 @@ export async function PUT(
     }
 
     // Agent check
-    if (user.role === "agent" && lead.assignedTo?.toString() !== user.userId) {
+    if (request.user.role === "agent" && lead.assignedTo?.toString() !== request.user.userId) {
       return NextResponse.json({ success: false, error: "Forbidden: Not assigned to this lead" }, { status: 403 });
     }
 
-    const body = await request.json();
+    const body = await request.clone().json();
     
     // Choose validation schema based on role
-    const schema = user.role === "admin" ? updateLeadAdminSchema : updateLeadAgentSchema;
+    const schema = request.user.role === "admin" ? updateLeadAdminSchema : updateLeadAgentSchema;
     const result = schema.safeParse(body);
 
     if (!result.success) {
@@ -97,12 +76,11 @@ export async function PUT(
       activitiesToLog.push({
         lead: id,
         action: `Status changed from ${lead.status} to ${updates.status}`,
-        performedBy: user.userId
+        performedBy: request.user.userId
       });
     }
 
-    if (user.role === "admin" && "assignedTo" in updates && updates.assignedTo !== undefined) {
-      // Check if assignedTo actually changed
+    if (request.user.role === "admin" && "assignedTo" in updates && updates.assignedTo !== undefined) {
       const oldAssignedTo = lead.assignedTo?.toString() || null;
       const newAssignedTo = updates.assignedTo || null;
       
@@ -116,23 +94,18 @@ export async function PUT(
         activitiesToLog.push({
           lead: id,
           action: `Assigned to ${assignedAgentName}`,
-          performedBy: user.userId
+          performedBy: request.user.userId
         });
       }
     }
 
-    // Apply updates
     Object.assign(lead, updates);
-    
-    // Save lead (triggers pre-save hooks like score calculation)
     await lead.save();
 
-    // Save activities
     if (activitiesToLog.length > 0) {
       await Activity.insertMany(activitiesToLog);
     }
 
-    // Notify all connected browsers in real-time
     broadcastSseEvent("lead_updated", { leadId: id, updates });
 
     return NextResponse.json({
@@ -140,25 +113,12 @@ export async function PUT(
       message: "Lead updated successfully",
       lead
     });
+  },
+  { requireAuth: true }
+);
 
-  } catch (error: any) {
-    console.error("[PUT /api/leads/[id]]", error);
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const user = await getAuthUser(request);
-    if (!user) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-
-    if (user.role !== "admin") {
-      return NextResponse.json({ success: false, error: "Forbidden: Admins only" }, { status: 403 });
-    }
-
+export const DELETE = withMiddleware(
+  async (request, { params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
     await dbConnect();
 
@@ -168,16 +128,12 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: "Lead not found" }, { status: 404 });
     }
 
-    // Delete associated activities
     await Activity.deleteMany({ lead: id });
 
     return NextResponse.json({
       success: true,
       message: "Lead deleted successfully"
     });
-
-  } catch (error: any) {
-    console.error("[DELETE /api/leads/[id]]", error);
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
-  }
-}
+  },
+  { requireAdmin: true }
+);
