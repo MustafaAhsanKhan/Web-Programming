@@ -1,0 +1,6 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">ISAM Secure Auth Logo</title>
+  <desc id="desc">Rounded square logo with ISAM wordmark</desc>
+  <rect x="6" y="6" width="116" height="116" rx="26" fill="#0f172a"/>
+  <text x="64" y="74" text-anchor="middle" fill="#f8fafc" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" letter-spacing="1">ISAM</text>
+</svg>
